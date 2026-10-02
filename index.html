@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Smart Parking Dashboard</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    color: #172033;
+}
+
+header {
+    background: #101827;
+    color: white;
+    padding: 22px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.badge {
+    background: #16a34a;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.hero {
+    margin-bottom: 25px;
+}
+
+.hero h1 {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.hero p {
+    color: #64748b;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.card {
+    background: white;
+    padding: 22px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+}
+
+.card h3 {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.number {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 22px;
+}
+
+.panel {
+    background: white;
+    padding: 23px;
+    border-radius: 15px;
+    margin-bottom: 22px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+}
+
+.panel h2 {
+    margin-top: 0;
+}
+
+.slots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.slot {
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+}
+
+.slot-icon {
+    font-size: 42px;
+    margin: 15px;
+}
+
+.free {
+    color: #16a34a;
+    font-weight: bold;
+}
+
+.occupied {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+button {
+    border: none;
+    background: #2563eb;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 12px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+select {
+    padding: 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+}
+
+.result {
+    display: none;
+    margin-top: 15px;
+    padding: 14px;
+    background: #eff6ff;
+    border-radius: 9px;
+}
+
+.leds {
+    display: flex;
+    gap: 12px;
+}
+
+.led {
+    flex: 1;
+    padding: 18px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.blue {
+    background: #dbeafe;
+}
+
+.cyan {
+    background: #cffafe;
+}
+
+.green {
+    background: #dcfce7;
+}
+
+.alert {
+    padding: 12px;
+    background: #fff1f2;
+    border-left: 4px solid #ef4444;
+    border-radius: 5px;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.feature {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    color: #64748b;
+}
+
+@media(max-width: 800px) {
+    .cards,
+    .layout,
+    .slots {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+🚗 AI Smart Parking
+</div>
+
+<div class="badge">
+WEB DEMO
+</div>
+
+</header>
+
+<div class="container">
+
+<div class="hero">
+
+<h1>
+Smart Parking Management Dashboard
+</h1>
+
+<p>
+AI-based parking monitoring, intelligent slot guidance and parking analytics.
+</p>
+
+</div>
+
+<div class="cards">
+
+<div class="card">
+<h3>Total Slots</h3>
+<div class="number">3</div>
+</div>
+
+<div class="card">
+<h3>Free Slots</h3>
+<div class="number" id="freeCount">3</div>
+</div>
+
+<div class="card">
+<h3>Occupied</h3>
+<div class="number" id="occupiedCount">0</div>
+</div>
+
+<div class="card">
+<h3>Active Alerts</h3>
+<div class="number" id="alertCount">0</div>
+</div>
+
+</div>
+
+<div class="layout">
+
+<main>
+
+<div class="panel">
+
+<h2>🅿️ Parking Slots</h2>
+
+<div class="slots">
+
+<div class="slot">
+
+<h3>S1 — VIP Reserved</h3>
+
+<div class="slot-icon">🚘</div>
+
+<div id="s1status" class="free">
+FREE
+</div>
+
+<button onclick="toggleSlot('S1')">
+Simulate Entry
+</button>
+
+</div>
+
+<div class="slot">
+
+<h3>S2 — Accessibility</h3>
+
+<div class="slot-icon">♿</div>
+
+<div id="s2status" class="free">
+FREE
+</div>
+
+<button onclick="toggleSlot('S2')">
+Simulate Entry
+</button>
+
+</div>
+
+<div class="slot">
+
+<h3>S3 — Normal</h3>
+
+<div class="slot-icon">🚗</div>
+
+<div id="s3status" class="free">
+FREE
+</div>
+
+<button onclick="toggleSlot('S3')">
+Simulate Entry
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<h2>🧭 Intelligent Slot Guidance</h2>
+
+<select id="vehicleType">
+
+<option value="NORMAL">
+Normal Vehicle
+</option>
+
+<option value="VIP">
+VIP
+</option>
+
+<option value="ACCESSIBILITY">
+Accessibility
+</option>
+
+</select>
+
+<button onclick="findSlot()">
+Find Nearest Slot
+</button>
+
+<div id="guidanceResult" class="result">
+</div>
+
+</div>
+
+<div class="panel">
+
+<h2>💡 Smart LED Simulation</h2>
+
+<div class="leds">
+
+<div class="led blue">
+S1<br>BLUE
+</div>
+
+<div class="led cyan">
+S2<br>CYAN
+</div>
+
+<div class="led green">
+S3<br>GREEN
+</div>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<h2>📊 Parking Analytics</h2>
+
+<p>
+<b>Peak Hours:</b>
+08:00–10:00 and 17:00–20:00
+</p>
+
+<p>
+<b>Vehicle Detection:</b>
+YOLO
+</p>
+
+<p>
+<b>Number Plate Recognition:</b>
+EasyOCR
+</p>
+
+<p>
+<b>Database:</b>
+SQLite
+</p>
+
+<p>
+<b>Dashboard:</b>
+Streamlit / Web Interface
+</p>
+
+</div>
+
+</main>
+
+<aside>
+
+<div class="panel">
+
+<h2>🚨 Alerts</h2>
+
+<div id="alerts">
+
+<p>No active alerts.</p>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<h2>⚙️ System Features</h2>
+
+<div class="features">
+
+<div class="feature">
+🤖 AI Vehicle Detection
+</div>
+
+<div class="feature">
+🔎 Number Plate OCR
+</div>
+
+<div class="feature">
+🅿️ Slot Monitoring
+</div>
+
+<div class="feature">
+🧭 Smart Guidance
+</div>
+
+<div class="feature">
+🎫 QR Tickets
+</div>
+
+<div class="feature">
+🚨 Overstay Alerts
+</div>
+
+<div class="feature">
+🔐 Reserved Parking
+</div>
+
+<div class="feature">
+📈 Analytics
+</div>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<h2>🎫 Digital Ticket</h2>
+
+<p>
+Generate a demonstration parking ticket.
+</p>
+
+<button onclick="generateTicket()">
+Generate Ticket
+</button>
+
+<div id="ticket" class="result">
+</div>
+
+</div>
+
+</aside>
+
+</div>
+
+</div>
+
+<footer>
+
+<p>
+<b>
+AI-Based Smart Parking Management and Intelligent Slot Guidance System
+</b>
+</p>
+
+<p>
+Academic Capstone Project • Web Demonstration
+</p>
+
+</footer>
+
+<script>
+
+const slots = {
+S1: false,
+S2: false,
+S3: false
+};
+
+function updateCounters() {
+
+let occupied =
+Object.values(slots).filter(x => x).length;
+
+document.getElementById("occupiedCount").innerText =
+occupied;
+
+document.getElementById("freeCount").innerText =
+3 - occupied;
+
+}
+
+function toggleSlot(slot) {
+
+slots[slot] = !slots[slot];
+
+const element =
+document.getElementById(
+slot.toLowerCase() + "status"
+);
+
+if (slots[slot]) {
+
+element.innerText = "OCCUPIED";
+
+element.className = "occupied";
+
+} else {
+
+element.innerText = "FREE";
+
+element.className = "free";
+
+}
+
+updateCounters();
+
+}
+
+function findSlot() {
+
+const type =
+document.getElementById("vehicleType").value;
+
+let slot = "";
+
+if (type === "VIP") {
+
+slot =
+!slots.S1
+? "S1 — VIP Reserved"
+: "No VIP slot available";
+
+}
+
+else if (type === "ACCESSIBILITY") {
+
+slot =
+!slots.S2
+? "S2 — Accessibility Reserved"
+: "No accessibility slot available";
+
+}
+
+else {
+
+slot =
+!slots.S3
+? "S3 — Normal Parking"
+: "No normal slot available";
+
+}
+
+const result =
+document.getElementById("guidanceResult");
+
+result.style.display = "block";
+
+result.innerHTML =
+"<b>Recommended Slot:</b> " + slot;
+
+}
+
+function generateTicket() {
+
+const ticketNumber =
+"SP-" + Math.floor(Math.random() * 90000 + 10000);
+
+const time =
+new Date().toLocaleString();
+
+const ticket =
+document.getElementById("ticket");
+
+ticket.style.display = "block";
+
+ticket.innerHTML =
+"<b>Ticket ID:</b> " + ticketNumber +
+"<br><b>Entry Time:</b> " + time +
+"<br><b>Status:</b> ACTIVE";
+
+}
+
+</script>
+
+</body>
+</html>
